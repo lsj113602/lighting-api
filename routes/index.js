@@ -10,8 +10,10 @@ const link = require('./link');
 const category = require('./category');
 const timeAxis = require('./timeAxis');
 const project = require('./project');
+import apiRoutes from './apiRoutes';
 
 module.exports = app => {
+  app.use('/api', apiRoutes);
 	app.post('/login', user.login);
 	app.post('/logout', user.logout);
 	app.post('/loginAdmin', user.loginAdmin);
