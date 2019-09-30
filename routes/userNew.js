@@ -9,7 +9,7 @@ routes.get(
   user.login,
 );
 routes.get(
-  '/login3',
+  '/login5',
   user.login,
 );
 export default routes;
