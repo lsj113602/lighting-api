@@ -8,4 +8,8 @@ routes.get(
   '/login',
   user.login,
 );
+routes.get(
+  '/login3',
+  user.login,
+);
 export default routes;
