@@ -17,16 +17,19 @@ const linkSchema = new mongoose.Schema({
 	desc: { type: String, default: '' },
 
 	// 链接 url
-	url: { type: String, required: true, validate: /\S+/, default: '' },
+	url: { type: String, default: '' },
 
 	// 图标
 	icon: { type: String, default: '' },
 
-	// 类型 =>  // 1 :其他友情链接 2: 是博主的个人链接
+	// 类型 =>  // 1 :首页banner, 2:
 	type: { type: Number, default: 1 },
 
 	// 状态 => 0 不向外展示，1 向外展示，
 	state: { type: Number, default: 1 },
+
+	// 排序
+	sort: { type: Number, default: 0 },
 
 	// 创建日期
 	create_time: { type: Date, default: Date.now },

@@ -1,12 +1,21 @@
 import { responseClient } from '../util/util';
 import Link from '../models/link';
-
+exports.hasErr = (req, res, next) => {
+  let keyword = req.query.keyword || '';
+  console.log(keyword);
+  if (keyword) {
+    return next();
+	} else {
+    responseClient(res, 300, 0, '没有keyword');
+	}
+};
 //获取全部链接
 exports.getLinkList = (req, res) => {
 	let keyword = req.query.keyword || '';
 	let type = Number(req.query.type); // 1 :其他友情链接 2: 是博主的个人链接 ,‘’ 代表所有链接
 	let pageNum = parseInt(req.query.pageNum) || 1;
 	let pageSize = parseInt(req.query.pageSize) || 10;
+	console.log(keyword, type, pageNum, pageSize);
 	let conditions = {};
 	if (type) {
 		if (keyword) {
@@ -63,7 +72,7 @@ exports.getLinkList = (req, res) => {
 	});
 };
 exports.addLink = (req, res) => {
-	let { name, desc, icon, url, type } = req.body;
+	let { name, desc, icon, url, type } = req.query;
 	Link.findOne({
 		name,
 	})

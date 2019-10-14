@@ -4,7 +4,8 @@
 import { Router } from 'express';
 import HTTPStatus from 'http-status';
 
-import user from './userNew';
+import User from './userNew';
+import Link from './linkNew';
 
 const routes = new Router();
 
@@ -16,7 +17,10 @@ routes.get('/clientip', async (req, res) => {
 
 
 // 会员信息相关
-routes.use('/user', user);
+routes.use('/user', User);
+
+// 跳转banner
+routes.use('/link', Link);
 
 routes.all('*', (req, res, next) =>
   next(new APIError('Not Found!', HTTPStatus.NOT_FOUND, true)),
