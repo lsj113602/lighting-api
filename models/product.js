@@ -36,7 +36,7 @@ const productSchema = new mongoose.Schema({
   tag: String,
 
   // desc
-  desc:
+  desc: { type: mongoose.Schema.Types.ObjectId, ref: 'ProjectDesc'},
   // 商品备注
   remark: String,
 
