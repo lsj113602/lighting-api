@@ -30,7 +30,7 @@ const adminSchema = new mongoose.Schema({
   img_url: { type: String, default: '' },
 
   // 邮箱
-  email: {
+  account: {
     type: String,
     default: '',
     // required: true,

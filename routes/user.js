@@ -89,9 +89,9 @@ exports.getUser = (req, res) => {
 };
 
 exports.login = (req, res) => {
-  let { email, password } = req.body;
-  if (!email) {
-    responseClient(res, 400, 2, '用户邮箱不可为空');
+  let { account, password } = req.body;
+  if (!account) {
+    responseClient(res, 400, 2, '账号不可为空');
     return;
   }
   if (!password) {
@@ -99,7 +99,7 @@ exports.login = (req, res) => {
     return;
   }
   User.findOne({
-    email,
+    account,
     password: md5(password + MD5_SUFFIX),
   })
     .then(userInfo => {
@@ -194,18 +194,18 @@ exports.loginAdmin = (req, res) => {
 };
 
 exports.register = (req, res) => {
-  let { name, password, phone, email, introduce, type } = req.body;
-  if (!email) {
+  let { name, password, phone, account, introduce, type } = req.body;
+  if (!account) {
     responseClient(res, 400, 2, '用户邮箱不可为空');
     return;
   }
   const reg = new RegExp(
     '^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$',
   ); //正则表达式
-  if (!reg.test(email)) {
-    responseClient(res, 400, 2, '请输入格式正确的邮箱！');
-    return;
-  }
+  // if (!reg.test(account)) {
+  //   responseClient(res, 400, 2, '请输入格式正确的邮箱！');
+  //   return;
+  // }
   if (!name) {
     responseClient(res, 400, 2, '用户名不可为空');
     return;
@@ -215,7 +215,7 @@ exports.register = (req, res) => {
     return;
   }
   //验证用户是否已经在数据库中
-  User.findOne({ email: email })
+  User.findOne({ account: account })
     .then(data => {
       if (data) {
         responseClient(res, 200, 1, '用户邮箱已存在！');
@@ -223,7 +223,7 @@ exports.register = (req, res) => {
       }
       //保存到数据库
       let user = new User({
-        email,
+        account,
         name,
         password: md5(password + MD5_SUFFIX),
         phone,

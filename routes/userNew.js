@@ -12,4 +12,8 @@ routes.get(
   '/login5',
   user.login,
 );
+routes.post(
+  '/register',
+  user.register
+);
 export default routes;
