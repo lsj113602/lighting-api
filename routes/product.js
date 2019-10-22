@@ -11,7 +11,7 @@ const createFolder = function(folder){
     fs.mkdirSync(folder);
   }
 };
-const uploadFolder = './upload/';
+const uploadFolder = './images/product/';
 createFolder(uploadFolder);
 // 通过 filename 属性定制
 var storage = multer.diskStorage({
@@ -33,10 +33,10 @@ const routes = new Router();
 
 routes.post(
   '/productUpload',
-  upload.single('logo'),
+  upload.single('product'),
   (req, res, next) => {
-    var url = '/uploadImgs/' + req.file.filename
-    res.send({ret_code: url , ss: req.file});
+    var url = '/product/' + req.file.filename;
+    res.send({ret_code: url});
   },
 );
 routes.post(

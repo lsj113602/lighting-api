@@ -4,7 +4,7 @@ const user = require('./user');
 const routes = new Router();
 
 // 酒店资源
-routes.get(
+routes.post(
   '/login',
   user.login,
 );

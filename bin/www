@@ -21,7 +21,9 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-const server = http.createServer(app);
+const server = http.createServer(app, (req, res) => {
+  res.setHeader('access-control-allow-origin', '*');
+});
 
 /**
  * Listen on provided port, on all network interfaces.
