@@ -9,11 +9,19 @@ routes.post(
   user.login,
 );
 routes.get(
-  '/login5',
+  '/get',
   user.login,
 );
 routes.post(
   '/register',
   user.register
+);
+routes.post(
+  '/update',
+  user.updateUser
+);
+routes.get(
+  '/checkUser',
+  user.checkUser
 );
 export default routes;

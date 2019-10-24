@@ -1,8 +1,12 @@
 const fetch = require('node-fetch');
+import moment from 'moment';
+
+import CryptoUtil from '../util/cryptoUtil';
 const CONFIG = require('../app.config.js');
 const User = require('../models/user');
 // const OAuth = require('../models/oauth');
 import { MD5_SUFFIX, responseClient, md5 } from '../util/util.js';
+import { checkToken, createToken } from '../util/index.js';
 
 // 第三方授权登录的用户信息
 exports.getUser = (req, res) => {
@@ -106,7 +110,17 @@ exports.login = (req, res) => {
       if (userInfo) {
         //登录成功后设置session
         req.session.userInfo = userInfo;
-        responseClient(res, 200, 0, '登录成功', userInfo);
+        // 生成token
+        const time = moment().add(10,'days');
+        const token = {
+          id: userInfo.id,
+          account: userInfo.account,
+        };
+        const tokeyStr = createToken(token, { expiresIn: 20 });
+        // const tokeyStr = CryptoUtil.Encrypt(JSON.stringify(token));
+        console.log('tokeyStr', tokeyStr);
+        const result = { token: tokeyStr };
+        responseClient(res, 200, 0, '登录成功', result);
       } else {
         responseClient(res, 400, 1, '用户名或者密码错误');
       }
@@ -117,9 +131,15 @@ exports.login = (req, res) => {
 };
 
 //用户验证
-exports.userInfo = (req, res) => {
-  if (req.session.userInfo) {
-    responseClient(res, 200, 0, '', req.session.userInfo);
+exports.checkUser = (req, res) => {
+  const token = req.headers.accesstoken;
+  if (token) {
+    const result =checkToken(token);
+    if (result) {
+      responseClient(res, 200, 0, '', result);
+    } else {
+      responseClient(res, 200, 1, '请重新登录', req.session.userInfo);
+    }
   } else {
     responseClient(res, 200, 1, '请重新登录', req.session.userInfo);
   }
@@ -254,6 +274,46 @@ exports.delUser = (req, res) => {
       responseClient(res);
     });
 };
+
+exports.updateUser = async (req, res) => {
+  let { account, password, newPassword } = req.body;
+  if (!password || !newPassword) {
+    responseClient(res, 200, 1, '操作失败', '密码不能为空');
+  }
+  if (password === newPassword) {
+    responseClient(res, 200, 1, '操作失败', '两次秘密一样');
+    return false;
+  }
+  try {
+    const result = await User.findOne({
+      account,
+      password: md5(password + MD5_SUFFIX),
+    });
+    if (!result) {
+      responseClient(res, 200, 2, '操作失败', '原账号密码不正确');
+      return false;
+    }
+    User.update(
+      { account: account },
+      {
+        account,
+        password: md5(newPassword + MD5_SUFFIX),
+      },
+    )
+      .then(result => {
+        responseClient(res, 200, 0, '操作成功', result);
+      })
+      .catch(err => {
+        console.error(err);
+        responseClient(res);
+      });
+  } catch (err) {
+    console.log('操作失败');
+    responseClient(res, 200, 2, '操作失败', '原账号密码不正确');
+  }
+
+};
+
 
 exports.getUserList = (req, res) => {
   let keyword = req.query.keyword || '';
