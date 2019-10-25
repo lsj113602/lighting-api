@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { verifyJWT } from '../util/index.js';
 const user = require('./user');
 
 const routes = new Router();
@@ -22,6 +23,7 @@ routes.post(
 );
 routes.get(
   '/checkUser',
+  verifyJWT,
   user.checkUser
 );
 export default routes;

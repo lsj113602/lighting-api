@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+import { responseClient } from '../util/util.js';
 
 import { TokenKey } from './constants.js';
 
@@ -13,5 +14,18 @@ export const checkToken = (token) => {
     return payload || '';
   } catch (err) {
     return '';
+  }
+};
+
+export const verifyJWT = (req, res, next) => {
+  const token = req.headers.accesstoken;
+  try {
+    const decoded = jwt.verify(token, TokenKey);
+    if (decoded) {
+      return next();
+    }
+    return responseClient(res, 200, 401, 'token已经过期，请重新登陆');
+  } catch (err) {
+    return responseClient(res, 200, 403, 'token已经过期，请重新登陆');
   }
 };
