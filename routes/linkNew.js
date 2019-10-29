@@ -1,9 +1,9 @@
 import { Router } from 'express';
-const link = require('./link');
+const link = require('../controller/link');
 
 const routes = new Router();
 
-routes.get(
+routes.post(
   '/addLink',
   link.addLink,
 );

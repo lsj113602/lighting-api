@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { verifyJWT } from '../util/index.js';
-const user = require('./user');
+const user = require('../controller/user');
 
 const routes = new Router();
 

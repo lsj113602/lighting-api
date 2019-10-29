@@ -1,21 +1,19 @@
 import { responseClient } from '../util/util';
 import Link from '../models/link';
 exports.hasErr = (req, res, next) => {
-  let keyword = req.query.keyword || '';
-  console.log(keyword);
-  if (keyword) {
+  let page = req.query.page || '';
+  if (page) {
     return next();
 	} else {
-    responseClient(res, 300, 0, '没有keyword');
+    responseClient(res, 300, 0, '没有页码数');
 	}
 };
-//获取全部链接
+// 获取全部链接
 exports.getLinkList = (req, res) => {
-	let keyword = req.query.keyword || '';
+	let keyword = req.query.title || '';
 	let type = Number(req.query.type); // 1 :其他友情链接 2: 是博主的个人链接 ,‘’ 代表所有链接
-	let pageNum = parseInt(req.query.pageNum) || 1;
-	let pageSize = parseInt(req.query.pageSize) || 10;
-	console.log(keyword, type, pageNum, pageSize);
+	let pageNum = parseInt(req.query.page) || 1;
+	let pageSize = parseInt(req.query.limit) || 10;
 	let conditions = {};
 	if (type) {
 		if (keyword) {
@@ -45,19 +43,21 @@ exports.getLinkList = (req, res) => {
 			responseData.count = count;
 			// 待返回的字段
 			let fields = {
-				_id: 1,
+				id: 1,
 				name: 1,
-				// desc: 1,
-				// type: 1,
-				url: 1,
-				icon: 1,
-				// state: 1,
-				// create_time: 1,
+        url: 1,
+        icon: 1,
+        type: 1,
+        state: 1,
+        sort: 1,
+        desc: 1,
+        timestamp: 1,
+        author: 1,
 			};
 			let options = {
 				skip: skip,
 				limit: pageSize,
-				sort: { create_time: -1 },
+				sort: { timestamp: -1 },
 			};
 			Link.find(conditions, fields, options, (error, result) => {
 				if (err) {
@@ -72,18 +72,21 @@ exports.getLinkList = (req, res) => {
 	});
 };
 exports.addLink = (req, res) => {
-	let { name, desc, icon, url, type } = req.query;
+	const { id, name, url, icon, type, state, sort, desc, author } = req.body;
 	Link.findOne({
-		name,
+    id,
 	})
 		.then(result => {
 			if (!result) {
 				let link = new Link({
 					name,
-					desc,
+          url,
 					icon,
-					url,
 					type,
+          state,
+          sort,
+          desc,
+          author,
 				});
 				link
 					.save()
@@ -91,7 +94,7 @@ exports.addLink = (req, res) => {
 						responseClient(res, 200, 0, '添加成功', data);
 					})
 					.catch(err => {
-						throw err;
+            responseClient(res, 200, 1, '添加失败');
 					});
 			} else {
 				responseClient(res, 200, 1, '该链接名已存在');
@@ -103,13 +106,19 @@ exports.addLink = (req, res) => {
 };
 //
 exports.updateLink = (req, res) => {
-	const { state, id } = req.body;
+  const { id, name, url, icon, type, state, sort, desc, author } = req.body;
 	Link.update(
 		{ _id: id },
 		{
-			state,
-		},
-	)
+      name,
+      url,
+      icon,
+      type,
+      state,
+      sort,
+      desc,
+      author,
+		},)
 		.then(result => {
 			responseClient(res, 200, 0, '操作成功', result);
 		})
@@ -125,7 +134,7 @@ exports.delLink = (req, res) => {
 			if (result.n === 1) {
 				responseClient(res, 200, 0, '删除成功!');
 			} else {
-				responseClient(res, 200, 1, '标签不存在');
+				responseClient(res, 200, 1, '所选不存在');
 			}
 		})
 		.catch(err => {

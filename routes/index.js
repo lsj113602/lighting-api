@@ -1,12 +1,10 @@
 /*
 *所有的路由接口
 */
-const user = require('./user');
 const article = require('./article');
 const comment = require('./comment');
 const message = require('./message');
 const tag = require('./tag');
-const link = require('./link');
 const category = require('./category');
 const timeAxis = require('./timeAxis');
 const project = require('./project');
@@ -14,14 +12,6 @@ import apiRoutes from './apiRoutes';
 
 module.exports = app => {
   app.use('/api', apiRoutes);
-	app.post('/login', user.login);
-	app.post('/logout', user.logout);
-	app.post('/loginAdmin', user.loginAdmin);
-	app.post('/register', user.register);
-	app.post('/delUser', user.delUser);
-	app.post('/getUser', user.getUser);
-	app.get('/currentUser', user.currentUser);
-	app.get('/getUserList', user.getUserList);
 
 	app.post('/addComment', comment.addComment);
 	app.post('/addThirdComment', comment.addThirdComment);
@@ -46,11 +36,6 @@ module.exports = app => {
 	app.post('/delMessage', message.delMessage);
 	app.post('/getMessageDetail', message.getMessageDetail);
 	app.get('/getMessageList', message.getMessageList);
-
-	app.post('/addLink', link.addLink);
-	app.post('/updateLink', link.updateLink);
-	app.post('/delLink', link.delLink);
-	app.get('/getLinkList', link.getLinkList);
 
 	app.post('/addCategory', category.addCategory);
 	app.post('/delCategory', category.delCategory);

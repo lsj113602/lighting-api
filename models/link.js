@@ -11,7 +11,7 @@ const autoIncrement = require('mongoose-auto-increment');
 // 链接模型
 const linkSchema = new mongoose.Schema({
 	// 链接名称
-	name: { type: String, required: true, validate: /\S+/ },
+	name: { type: String, required: true },
 
 	// 链接 url
 	url: { type: String, default: '' },
@@ -32,10 +32,10 @@ const linkSchema = new mongoose.Schema({
   desc: { type: String, default: '' },
 
 	// 创建日期
-	create_time: { type: Date, default: Date.now },
+  timestamp: { type: Date, default: Date.now },
 
-	// 最后修改日期
-	update_time: { type: Date, default: Date.now },
+	// 最后修改人
+  author: { type: String, default: '' },
 });
 
 // 自增ID插件配置

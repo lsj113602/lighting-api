@@ -1,7 +1,7 @@
 import { Router } from 'express';
 var fs = require('fs');
 var multer  = require('multer')
-const link = require('./link');
+const link = require('../controller/link');
 
 
 const createFolder = function(folder){
