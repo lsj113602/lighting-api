@@ -1,5 +1,7 @@
 import { responseClient } from '../util/util';
 import Link from '../models/link';
+
+
 exports.hasErr = (req, res, next) => {
   let page = req.query.page || '';
   if (page) {
@@ -141,4 +143,10 @@ exports.delLink = (req, res) => {
 			console.error(err);
 			responseClient(res);
 		});
+};
+
+exports.uploadLinkImg = (req, res) => {
+	console.log('uploadLinkImg');
+  const url = '/linkImage/' + req.file.filename;
+  res.send({url: url});
 };
