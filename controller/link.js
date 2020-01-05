@@ -3,7 +3,7 @@ import Link from '../models/link';
 
 
 exports.hasErr = (req, res, next) => {
-  let page = req.query.page || '';
+  let page = req.query.page || '1';
   if (page) {
     return next();
 	} else {
@@ -15,7 +15,8 @@ exports.getLinkList = (req, res) => {
 	let keyword = req.query.title || '';
 	let type = Number(req.query.type); // 1 :其他友情链接 2: 是博主的个人链接 ,‘’ 代表所有链接
 	let pageNum = parseInt(req.query.page) || 1;
-	let pageSize = parseInt(req.query.limit) || 10;
+	let pageSize = parseInt(req.query.limit) || 100;
+	const sort = req.query.sort || 1;
 	let conditions = {};
 	if (type) {
 		if (keyword) {
@@ -58,8 +59,8 @@ exports.getLinkList = (req, res) => {
 			};
 			let options = {
 				skip: skip,
-				limit: pageSize,
-				sort: { timestamp: -1 },
+        limit: pageSize,
+				sort: { timestamp: sort },
 			};
 			Link.find(conditions, fields, options, (error, result) => {
 				if (err) {
@@ -80,6 +81,7 @@ exports.addLink = (req, res) => {
 	})
 		.then(result => {
 			if (!result) {
+				console.log('name', name, url, icon, author, req.body);
 				let link = new Link({
 					name,
           url,
@@ -96,7 +98,7 @@ exports.addLink = (req, res) => {
 						responseClient(res, 200, 0, '添加成功', data);
 					})
 					.catch(err => {
-            responseClient(res, 200, 1, '添加失败');
+            responseClient(res, 200, 1, err.message || '添加失败');
 					});
 			} else {
 				responseClient(res, 200, 1, '该链接名已存在');
@@ -109,8 +111,9 @@ exports.addLink = (req, res) => {
 //
 exports.updateLink = (req, res) => {
   const { id, name, url, icon, type, state, sort, desc, author } = req.body;
+  console.log('id:', id);
 	Link.update(
-		{ _id: id },
+		{ id: id },
 		{
       name,
       url,
@@ -147,6 +150,11 @@ exports.delLink = (req, res) => {
 
 exports.uploadLinkImg = (req, res) => {
 	console.log('uploadLinkImg');
+  const url = '/linkImage/' + req.file.filename;
+  res.send({url: url});
+};
+
+exports.uploadLinkVideo = (req, res) => {
   const url = '/linkImage/' + req.file.filename;
   res.send({url: url});
 };

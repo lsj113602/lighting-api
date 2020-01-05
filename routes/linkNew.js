@@ -46,14 +46,14 @@ routes.get(
   link.hasErr,
   link.getLinkList,
 );
-routes.get(
-  '/getLinkList',
-  link.hasErr,
-  link.getLinkList,
-);
 routes.post(
   '/uploadLinkImg',
   upload.single('linkImg'),
   link.uploadLinkImg,
+);
+routes.post(
+  '/uploadLinkVideo',
+  upload.single('linkVideo'),
+  link.uploadLinkVideo,
 );
 export default routes;
