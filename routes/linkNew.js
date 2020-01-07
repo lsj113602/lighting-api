@@ -56,4 +56,12 @@ routes.post(
   upload.single('linkVideo'),
   link.uploadLinkVideo,
 );
+routes.post(
+  '/addLinkList',
+  link.addLinkList,
+);
+routes.get(
+  '/delLinkAll',
+  link.delLinkAll,
+);
 export default routes;

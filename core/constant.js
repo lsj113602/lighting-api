@@ -5,6 +5,7 @@
  * @author biaochenxuying <https://github.com/biaochenxuying>
  */
 
+exports.IMAGE_URL = 'http://134.175.218.206:8088/';
 
 // 发布状态
 exports.PUBLISH_STATE = {

@@ -1,3 +1,4 @@
+import { IMAGE_URL } from '../core/constant';
 import { responseClient } from '../util/util';
 import Link from '../models/link';
 
@@ -74,44 +75,66 @@ exports.getLinkList = (req, res) => {
 		}
 	});
 };
+// 批量增加数据
+exports.addLinkList = (req, res) => {
+  const body = req.body;
+  Link.create(body)
+    .then(() => responseClient(res, 200, 0, '添加成功'))
+    .catch(err => responseClient(res, 200, 0, '添加失败'));
+};
 exports.addLink = (req, res) => {
 	const { id, name, url, icon, type, state, sort, desc, author } = req.body;
-	Link.findOne({
-    id,
-	})
-		.then(result => {
-			if (!result) {
-				console.log('name', name, url, icon, author, req.body);
-				let link = new Link({
-					name,
+	if (id) {
+    Link.findOne({
+      id,
+    }).then(result => {
+      if (!result) {
+        let link = new Link({
+          name,
           url,
-					icon,
-					type,
+          icon,
+          type,
           state,
           sort,
           desc,
           author,
-				});
-				link
-					.save()
-					.then(data => {
-						responseClient(res, 200, 0, '添加成功', data);
-					})
-					.catch(err => {
+        });
+        link
+          .save()
+          .then(data => {
+            responseClient(res, 200, 0, '添加成功', data);
+          })
+          .catch(err => {
             responseClient(res, 200, 1, err.message || '添加失败');
-					});
-			} else {
-				responseClient(res, 200, 1, '该链接名已存在');
-			}
-		})
-		.catch(err => {
-			responseClient(res);
-		});
+          });
+      } else {
+        responseClient(res, 200, 1, '该链接名已存在');
+      }
+    })
+	} else {
+    let link = new Link({
+      name,
+      url,
+      icon,
+      type,
+      state,
+      sort,
+      desc,
+      author,
+    });
+    link
+      .save()
+      .then(data => {
+        responseClient(res, 200, 0, '添加成功', data);
+      })
+      .catch(err => {
+        responseClient(res, 200, 1, err.message || '添加失败');
+      });
+	}
 };
 //
 exports.updateLink = (req, res) => {
   const { id, name, url, icon, type, state, sort, desc, author } = req.body;
-  console.log('id:', id);
 	Link.update(
 		{ id: id },
 		{
@@ -148,13 +171,24 @@ exports.delLink = (req, res) => {
 		});
 };
 
+exports.delLinkAll = (req, res) => {
+  Link.remove()
+    .then(result => {
+      responseClient(res, 200, 0, `删除${result.n }条数据`);
+    })
+    .catch(err => {
+      console.error(err);
+      responseClient(res);
+    });
+};
+
 exports.uploadLinkImg = (req, res) => {
 	console.log('uploadLinkImg');
-  const url = '/linkImage/' + req.file.filename;
+  const url = IMAGE_URL + 'linkImage/' + req.file.filename;
   res.send({url: url});
 };
 
 exports.uploadLinkVideo = (req, res) => {
-  const url = '/linkImage/' + req.file.filename;
+  const url = IMAGE_URL + 'linkImage/' + req.file.filename;
   res.send({url: url});
 };
