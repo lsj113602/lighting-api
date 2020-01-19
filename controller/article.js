@@ -3,10 +3,6 @@ import User from '../models/user';
 import { responseClient, timestampToTime } from '../util/util';
 
 exports.addArticle = (req, res) => {
-  // if (!req.session.userInfo) {
-  // 	responseClient(res, 200, 1, '您还没登录,或者登录信息已过期，请重新登录！');
-  // 	return;
-  // }
   const {
     title,
     author,
@@ -31,7 +27,6 @@ exports.addArticle = (req, res) => {
       desc,
       img_url,
       tags: tags ? tags.split(',') : [],
-      category: category ? category.split(',') : [],
       state,
       type,
       origin,
@@ -45,7 +40,6 @@ exports.addArticle = (req, res) => {
       numbers: content.length,
       desc,
       tags: tags ? tags.split(',') : [],
-      category: category ? category.split(',') : [],
       state,
       type,
       origin,
@@ -68,11 +62,13 @@ exports.addArticle = (req, res) => {
     });
 };
 
+exports.uploadArticleImg = (req, res) => {
+  console.log('uploadArticleImg');
+  const url = IMAGE_URL + 'articleImage/' + req.file.filename;
+  res.send({url: url});
+};
+
 exports.updateArticle = (req, res) => {
-  // if (!req.session.userInfo) {
-  // 	responseClient(res, 200, 1, '您还没登录,或者登录信息已过期，请重新登录！');
-  // 	return;
-  // }
   const {
     title,
     author,
@@ -187,6 +183,7 @@ exports.getArticleList = (req, res) => {
         desc: 1,
         img_url: 1,
         tags: 1,
+        state: 1,
         category: 1,
         meta: 1,
         create_time: 1,

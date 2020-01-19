@@ -6,7 +6,9 @@ import HTTPStatus from 'http-status';
 
 import User from './userNew';
 import Link from './linkNew';
-import Product from './product';
+import Article from './articleNew';
+import Product from './productNew';
+import Tag from './tagNew';
 
 const routes = new Router();
 
@@ -23,8 +25,14 @@ routes.use('/user', User);
 // 跳转banner
 routes.use('/link', Link);
 
+// 文章相关
+routes.use('/article', Article);
+
 // 商品信息
 routes.use('/product', Product);
+
+// 标签
+routes.use('/tag', Tag);
 
 routes.all('*', (req, res, next) =>
   next(new APIError('Not Found!', HTTPStatus.NOT_FOUND, true)),

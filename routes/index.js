@@ -1,13 +1,8 @@
 /*
 *所有的路由接口
 */
-const article = require('./article');
-const comment = require('./comment');
-const message = require('./message');
-const tag = require('./tag');
-const category = require('./category');
+// const comment = require('./comment');
 const timeAxis = require('./timeAxis');
-const project = require('./project');
 import apiRoutes from './apiRoutes';
 
 module.exports = app => {

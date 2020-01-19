@@ -19,6 +19,9 @@ const tagSchema = new mongoose.Schema({
 	// 图标
 	icon: String,
 
+	// 类型 0 商品  1 文字
+  type: { type: Number, default: 0 },
+
 	// 发布日期
 	create_time: { type: Date, default: Date.now },
 

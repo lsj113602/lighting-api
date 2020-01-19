@@ -26,8 +26,10 @@ exports.getTagList = (req, res) => {
     } else {
       responseData.count = count;
       let fields = {
-				_id: 1,
+        _id: 1,
         name: 1,
+				icon: 1,
+				type: 1,
         // desc: 1,
         // icon: 1,
         // create_time: 1,
@@ -51,7 +53,7 @@ exports.getTagList = (req, res) => {
   });
 };
 exports.addTag = (req, res) => {
-  let { name, desc } = req.body;
+  let { name, desc, type, icon } = req.body;
   Tag.findOne({
     name,
   })
@@ -60,6 +62,8 @@ exports.addTag = (req, res) => {
         let tag = new Tag({
           name,
           desc,
+					type,
+					icon,
         });
         tag
           .save()
