@@ -1,17 +1,27 @@
+import { IMAGE_URL } from '../core/constant';
 import { responseClient } from '../util/util';
 import Product from '../models/product';
 
 //获取全部商品
 exports.getProductList = (req, res) => {
   let title = req.query.title || null;
+  let sort = req.query.sort || null;
+  let hot = req.query.hotNum || null;
+  const ids = (req.query.ids && req.query.ids.split(',')) || [];
+  console.log('ids: ', ids);
+
   let pageNum = parseInt(req.query.pageNum) || 1;
-  let pageSize = parseInt(req.query.pageSize) || 10;
+  let pageSize = parseInt(req.query.pageSize) || 50;
   let conditions = {};
   if (title) {
     const reg = new RegExp(title, 'i');
     conditions = {
       $or: [{ title: { $regex: reg } }, { desc: { $regex: reg } }],
+      // id: { $in: ids }
     };
+  }
+  if (ids.length > 0) {
+    conditions.id = { $in: ids };
   }
   let skip = pageNum - 1 < 0 ? 0 : (pageNum - 1) * pageSize;
   let responseData = {
@@ -24,13 +34,14 @@ exports.getProductList = (req, res) => {
     } else {
       responseData.count = count;
       let fields = {
+        id: 1,
         title: 1,
         status: 1,
         logoImg: 1,
         imgList: 1,
         type: 1,
         price: 1,
-        oldPric: 1,
+        oldPrice: 1,
         tags: 1,
         unit: 1,
         spec: 1,
@@ -43,10 +54,22 @@ exports.getProductList = (req, res) => {
         create_time: 1,
         update_time: 1,
       }; // 待返回的字段
+      let s = {
+        create_time: 1,
+      };
+      if (sort) {
+        s = {
+          create_time: sort?-1:1,
+        }
+      } else if (hot) {
+        s = {
+          hotNum: hot?-1:1,
+        }
+      }
       let options = {
         skip: skip,
         limit: pageSize,
-        sort: { create_time: -1 },
+        sort: s,
       };
       Product.find(conditions, fields, options, (error, result) => {
         if (err) {
@@ -60,8 +83,16 @@ exports.getProductList = (req, res) => {
     }
   });
 };
+exports.getProductDesc = (req, res) => {
+  let id = req.query.id || '';
+  Product.findOne({ id}).then(product => {
+    responseClient(res, 200, 0, '获取成功', product);
+  }).catch(() => {
+    responseClient(res, 100, 100, '没有找到此商品', '');
+  })
+};
 exports.addProduct = (req, res) => {
-  let { title, status, logoImg, imgList, type, price, oldPric,
+  let { title, status, logoImg, imgList, type, price, oldPrice,
     tags, unit, spec, power, applySpace, hotNum, desc, remark, sort } = req.body;
   Product.findOne({
     title,
@@ -75,7 +106,7 @@ exports.addProduct = (req, res) => {
           imgList,
           type,
           price,
-          oldPric,
+          oldPrice,
           tags,
           unit,
           spec,
@@ -102,9 +133,41 @@ exports.addProduct = (req, res) => {
       responseClient(res);
     });
 };
+exports.updateProduct =  (req, res) => {
+  let { id, title, status, logoImg, imgList, type, price, oldPrice,
+    tags, unit, spec, power, applySpace, hotNum, desc, remark, sort } = req.body;
+  Product.update(
+    { id: id },
+    {
+      title,
+      status,
+      logoImg,
+      imgList,
+      type,
+      price,
+      oldPrice,
+      tags,
+      unit,
+      spec,
+      power,
+      applySpace,
+      hotNum,
+      desc,
+      remark,
+      sort,
+    },)
+    .then(result => {
+      responseClient(res, 200, 0, '修改成功', result);
+    })
+    .catch(err => {
+      console.error(err);
+      responseClient(res);
+    });
+};
 exports.delProduct = (req, res) => {
   let { id } = req.body;
-  Product.deleteMany({ _id: id })
+  console.log('req.body:', req);
+  Product.deleteMany({ id: id })
     .then(result => {
       if (result.n === 1) {
         responseClient(res, 200, 0, '删除成功!');
@@ -115,4 +178,9 @@ exports.delProduct = (req, res) => {
     .catch(err => {
       responseClient(res);
     });
+};
+
+exports.uploadProductImg = (req, res) => {
+  const url = IMAGE_URL + 'productImage/' + req.file.filename;
+  res.send({url: url});
 };

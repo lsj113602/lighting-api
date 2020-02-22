@@ -33,8 +33,26 @@ routes.post(
   '/addProduct',
   product.addProduct,
 );
+routes.post(
+  '/updateProduct',
+  product.updateProduct,
+);
 routes.get(
   '/getProductList',
   product.getProductList,
+);
+routes.get(
+  '/getProductDesc',
+  product.getProductDesc,
+);
+routes.post(
+  '/uploadProductImg',
+  upload.single('productImg'),
+  product.uploadProductImg,
+);
+routes.post(
+  '/deleteProduct',
+  upload.single('productImg'),
+  product.delProduct,
 );
 export default routes;

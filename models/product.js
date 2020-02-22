@@ -30,7 +30,7 @@ const productSchema = new mongoose.Schema({
   oldPrice: String,
 
   // 商品标签
-  tags: [{ type: String, default: '' }],
+  tags: String,
 
   // 商品单位
   unit: String,
@@ -42,7 +42,7 @@ const productSchema = new mongoose.Schema({
   power: String,
 
   // 应用空间（厨房、客厅）
-  applySpace: [{ type: String, default: '' }],
+  applySpace: String,
 
   // 商品热度
   hotNum: Number,
