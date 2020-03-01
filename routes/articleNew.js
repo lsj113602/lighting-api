@@ -42,4 +42,12 @@ routes.post(
   upload.single('ArticleImg'),
   article.uploadArticleImg,
 );
+routes.post(
+  '/updateArticle',
+  article.updateArticle,
+);
+routes.post(
+  '/delArticle',
+  article.delArticle,
+);
 export default routes;

@@ -7,6 +7,7 @@ exports.getProductList = (req, res) => {
   let title = req.query.title || null;
   let sort = req.query.sort || null;
   let hot = req.query.hotNum || null;
+  let status = req.query.status || null;
   const ids = (req.query.ids && req.query.ids.split(',')) || [];
   console.log('ids: ', ids);
 
@@ -19,6 +20,9 @@ exports.getProductList = (req, res) => {
       $or: [{ title: { $regex: reg } }, { desc: { $regex: reg } }],
       // id: { $in: ids }
     };
+  }
+  if (status) {
+    conditions.status = status;
   }
   if (ids.length > 0) {
     conditions.id = { $in: ids };

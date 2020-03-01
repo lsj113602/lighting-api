@@ -17,6 +17,7 @@ exports.getLinkList = (req, res) => {
 	let type = Number(req.query.type); // 1 :其他友情链接 2: 是博主的个人链接 ,‘’ 代表所有链接
 	let pageNum = parseInt(req.query.page) || 1;
 	let pageSize = parseInt(req.query.limit) || 100;
+  let state = req.query.state || '';
 	const sort = req.query.sort || 1;
 	let conditions = {};
 	if (type) {
@@ -33,6 +34,9 @@ exports.getLinkList = (req, res) => {
 			const reg = new RegExp(keyword, 'i');
 			conditions = { $or: [{ name: { $regex: reg } }, { desc: { $regex: reg } }] };
 		}
+	}
+	if (state) {
+    conditions.state = state;
 	}
 
 	let skip = pageNum - 1 < 0 ? 0 : (pageNum - 1) * pageSize;

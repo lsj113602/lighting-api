@@ -39,7 +39,7 @@ const articleSchema = new mongoose.Schema({
 
 	// 文章转载状态 => 0 原创，1 转载，2 混合
 	origin: { type: Number, default: 0 },
-
+	sort: Number,
 	// 文章标签
 	tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag', required: true }],
 

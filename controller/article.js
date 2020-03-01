@@ -11,10 +11,9 @@ exports.addArticle = (req, res) => {
     desc,
     img_url,
     tags,
-    category,
     state,
     type,
-    origin,
+    sort,
   } = req.body;
   let tempArticle = null;
   if (img_url) {
@@ -29,7 +28,7 @@ exports.addArticle = (req, res) => {
       tags: tags ? tags.split(',') : [],
       state,
       type,
-      origin,
+      sort,
     });
   } else {
     tempArticle = new Article({
@@ -42,7 +41,7 @@ exports.addArticle = (req, res) => {
       tags: tags ? tags.split(',') : [],
       state,
       type,
-      origin,
+      sort,
     });
   }
 
@@ -76,27 +75,22 @@ exports.updateArticle = (req, res) => {
     content,
     desc,
     img_url,
-    tags,
-    category,
     state,
-    type,
-    origin,
+    sort,
     id,
   } = req.body;
   Article.update(
-    { _id: id },
+    { id },
     {
       title,
       author,
       keyword: keyword ? keyword.split(',') : [],
       content,
+      numbers: content.length,
       desc,
       img_url,
-      tags: tags ? tags.split(',') : [],
-      category: category ? category.split(',') : [],
+      sort,
       state,
-      type,
-      origin,
     },
   )
     .then(result => {
@@ -110,7 +104,7 @@ exports.updateArticle = (req, res) => {
 
 exports.delArticle = (req, res) => {
   let { id } = req.body;
-  Article.deleteMany({ _id: id })
+  Article.deleteMany({ id })
     .then(result => {
       if (result.n === 1) {
         responseClient(res, 200, 0, '删除成功!');
@@ -128,22 +122,16 @@ exports.delArticle = (req, res) => {
 exports.getArticleList = (req, res) => {
   let keyword = req.query.keyword || null;
   let state = req.query.state || '';
-  let likes = req.query.likes || '';
-  let tag_id = req.query.tag_id || '';
-  let category_id = req.query.category_id || '';
-  let article = req.query.article || '';
+  let sort = req.query.sort || '';
   let pageNum = parseInt(req.query.pageNum) || 1;
   let pageSize = parseInt(req.query.pageSize) || 10;
   // 如果是文章归档 返回全部文章
-  if (article) {
-    pageSize = 1000;
-  }
   let conditions = {};
   if (!state) {
     if (keyword) {
       const reg = new RegExp(keyword, 'i'); //不区分大小写
       conditions = {
-        $or: [{ title: { $regex: reg } }, { desc: { $regex: reg } }],
+        $or: [{ title: { $regex: reg } }, { content: { $regex: reg } }],
       };
     }
   } else if (state) {
@@ -156,7 +144,7 @@ exports.getArticleList = (req, res) => {
           {
             $or: [
               { title: { $regex: reg } },
-              { desc: { $regex: reg } },
+              { content: { $regex: reg } },
               { keyword: { $regex: reg } },
             ],
           },
@@ -179,21 +167,16 @@ exports.getArticleList = (req, res) => {
       responseData.count = count;
       // 待返回的字段
       let fields = {
+        id: 1,
         title: 1,
-        desc: 1,
+        content: 1,
         img_url: 1,
         tags: 1,
+        author: 1,
+        sort: 1,
         state: 1,
-        category: 1,
-        meta: 1,
         create_time: 1,
       };
-      if(article){
-        fields = {
-          title: 1,
-          create_time: 1,
-        };
-      }
       let options = {
         skip: skip,
         limit: pageSize,
@@ -205,61 +188,12 @@ exports.getArticleList = (req, res) => {
           // throw error;
         } else {
           let newList = [];
-          if (likes) {
-            // 根据热度 likes 返回数据
+          if (sort) {
+            // 根据热度 sort 返回数据
             result.sort((a, b) => {
-              return b.meta.likes - a.meta.likes;
+              return b.sort - a.sort;
             });
             responseData.list = result;
-          } else if (category_id) {
-            // console.log('category_id :', category_id);
-            // 根据 分类 id 返回数据
-            result.forEach(item => {
-              if (item.category.indexOf(category_id) > -1) {
-                newList.push(item);
-              }
-            });
-            let len = newList.length;
-            responseData.count = len;
-            responseData.list = newList;
-          } else if (tag_id) {
-            // console.log('tag_id :', tag_id);
-            // 根据标签 id 返回数据
-            result.forEach(item => {
-              if (item.tags.indexOf(tag_id) > -1) {
-                newList.push(item);
-              }
-            });
-            let len = newList.length;
-            responseData.count = len;
-            responseData.list = newList;
-          } else if (article) {
-            const archiveList = []
-            let obj = {}
-            // 按年份归档 文章数组
-            result.forEach((e) => {
-              let year = e.create_time.getFullYear()
-              // let month = e.create_time.getMonth()
-              if(!obj[year]){
-                obj[year] = []
-                obj[year].push(e)
-              } else {
-                obj[year].push(e)
-              }
-            })
-            for (const key in obj) {
-              if (obj.hasOwnProperty(key)) {
-                const element = obj[key];
-                let item = {}
-                item.year = key
-                item.list = element
-                archiveList.push(item)
-              }
-            }
-            archiveList.sort((a, b) => {
-              return b.year - a.year;
-            });
-            responseData.list = archiveList;
           }
           else {
             responseData.list = result;
